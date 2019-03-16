@@ -208,7 +208,11 @@ class MergeSort : public Sorteermethode<T> {
 public:
     void operator()(Sortvector<T> &v) const;
 
-    void mergesort(Sortvector<T> &v, int l, int r, vector<T> &h) const;
+    void operator()(Sortvector<T> &v, bool topDown) const;
+
+    void topDownMergeSort(Sortvector<T> &v, int l, int r, vector<T> &h) const;
+
+    void bottomUpMergeSort(Sortvector<T> &v, vector<T> &h) const;
 
     void merge(Sortvector<T> &v, int l, int m, int r, vector<T> &h) const;
 };
@@ -216,17 +220,39 @@ public:
 template<class T>
 void MergeSort<T>::operator()(Sortvector<T> &v) const {
     vector<T> h(v.size() / 2);
-    mergesort(v, 0, v.size(), h);
+    topDownMergeSort(v, 0, v.size(), h);
 }
 
 template<class T>
-void MergeSort<T>::mergesort(Sortvector<T> &v, int l, int r, vector<T> &h) const {
+void MergeSort<T>::operator()(Sortvector<T> &v, bool topDown) const {
+    vector<T> h(v.size() / 2);
+    if (topDown)
+        topDownMergeSort(v, 0, v.size(), h);
+    else
+        bottomUpMergeSort(v, h);
+}
+
+template<class T>
+void MergeSort<T>::topDownMergeSort(Sortvector<T> &v, int l, int r, vector<T> &h) const {
     if (l < r - 1) {
         int m = l + (r - l) / 2;
-
-        mergesort(v, l, m, h);
-        mergesort(v, m, r, h);
+        topDownMergeSort(v, l, m, h);
+        topDownMergeSort(v, m, r, h);
         merge(v, l, m, r, h);
+    }
+}
+
+template<class T>
+void MergeSort<T>::bottomUpMergeSort(Sortvector<T> &v, vector<T> &h) const {
+
+    for (int width = 1; width < v.size(); width *= 2) {
+        for (int i = 0; i < v.size(); i = i + 2 * width) {
+            int l = i;
+            int m = i + width;
+            int r = i + 2 * width <= v.size() ? i + 2 * width : v.size();
+
+            merge(v, l, m, r, h);
+        }
     }
 }
 
@@ -333,7 +359,7 @@ public:
 
 template<class T>
 void DualPivotQuickSort<T>::operator()(Sortvector<T> &v) const {
-    dualPivotQuickSort(v, 0, v.size()-1);
+    dualPivotQuickSort(v, 0, v.size() - 1);
 }
 
 template<class T>
@@ -351,7 +377,7 @@ void DualPivotQuickSort<T>::dualPivotQuickSort(Sortvector<T> &v, int l, int r) c
                 swap(v[m], v[k]);
                 k++;
             } else if (v[m] > v[r]) {
-                while(v[g] > v[r])
+                while (v[g] > v[r])
                     g--;
                 swap(v[m], v[g]);
                 g--;
@@ -387,22 +413,22 @@ public:
 
 template<class T>
 void CountSort<T>::operator()(Sortvector<T> &v) const {
-    vector<int> freq(v.size(), 0), output(v.size(),0);
+    vector<int> freq(v.size(), 0), output(v.size(), 0);
 
-    for(int i=0;i<v.size();i++) {
+    for (int i = 0; i < v.size(); i++) {
         freq[v[i]]++;
     }
 
-    for(int i=1;i<v.size();i++) {
-        freq[i] += freq[i-1];
+    for (int i = 1; i < v.size(); i++) {
+        freq[i] += freq[i - 1];
     }
 
-    for(int i=v.size()-1;i>=0;i--) {
+    for (int i = v.size() - 1; i >= 0; i--) {
         output[freq[v[i]]] = v[i];
         freq[v[i]]--;
     }
 
-    for(int i=0;i<v.size();i++) {
+    for (int i = 0; i < v.size(); i++) {
         v[i] = move(output[i]);
     }
 }
@@ -429,6 +455,7 @@ template<typename T>
 class MSDRadixSort : public Sorteermethode<T> {
 public:
     void operator()(Sortvector<T> &v) const;
+
     void radixCountSort(Sortvector<T> &v, int exp) const;
 };
 
@@ -436,8 +463,8 @@ template<class T>
 void MSDRadixSort<T>::operator()(Sortvector<T> &v) const {
     //Maximum zoeken
     T max = v[0];
-    for(int i=1;i<v.size();i++) {
-        if(max < v[i]) {
+    for (int i = 1; i < v.size(); i++) {
+        if (max < v[i]) {
             max = v[i];
         }
     }
@@ -445,38 +472,38 @@ void MSDRadixSort<T>::operator()(Sortvector<T> &v) const {
     //Get number of digits
     int digits = 1;
     int count = 0;
-    while(digits < max) {
-        digits *=10;
+    while (digits < max) {
+        digits *= 10;
         count++;
     }
 
     //Run count sort for each digit
     for (count; count > 0; count--)
-        digits/=10;
-        radixCountSort(v, digits);
+        digits /= 10;
+    radixCountSort(v, digits);
 }
+
 template<class T>
 void MSDRadixSort<T>::radixCountSort(Sortvector<T> &v, int exp) const {
-    vector<int> freq(v.size(), 0), output(v.size(),0);
+    vector<int> freq(v.size(), 0), output(v.size(), 0);
 
-    for(int i=0;i<v.size();i++) {
-        freq[v[i]/exp]++;
+    for (int i = 0; i < v.size(); i++) {
+        freq[v[i] / exp]++;
     }
 
-    for(int i=1;i<v.size();i++) {
-        freq[i] += freq[i-1];
+    for (int i = 1; i < v.size(); i++) {
+        freq[i] += freq[i - 1];
     }
 
-    for(int i=v.size()-1;i>=0;i--) {
-        output[freq[v[i]/exp]] = v[i];
-        freq[v[i]/exp]--;
+    for (int i = v.size() - 1; i >= 0; i--) {
+        output[freq[v[i] / exp]] = v[i];
+        freq[v[i] / exp]--;
     }
 
-    for(int i=0;i<v.size();i++) {
+    for (int i = 0; i < v.size(); i++) {
         v[i] = move(output[i]);
     }
 }
-
 
 
 /** \class MSD Radix Sort
@@ -500,6 +527,7 @@ template<typename T>
 class LSDRadixSort : public Sorteermethode<T> {
 public:
     void operator()(Sortvector<T> &v) const;
+
     void radixCountSort(Sortvector<T> &v, int exp) const;
 };
 
@@ -507,35 +535,35 @@ template<class T>
 void LSDRadixSort<T>::operator()(Sortvector<T> &v) const {
     //Maximum zoeken
     T max = v[0];
-    for(int i=1;i<v.size();i++) {
-        if(max < v[i]) {
+    for (int i = 1; i < v.size(); i++) {
+        if (max < v[i]) {
             max = v[i];
         }
     }
 
     //Run count sort for each digit
-    for (int exp = 1; max/exp > 0; exp*=10)
+    for (int exp = 1; max / exp > 0; exp *= 10)
         radixCountSort(v, exp);
 }
 
 template<class T>
 void LSDRadixSort<T>::radixCountSort(Sortvector<T> &v, int exp) const {
-    vector<int> freq(v.size(), 0), output(v.size(),0);
+    vector<int> freq(v.size(), 0), output(v.size(), 0);
 
-    for(int i=0;i<v.size();i++) {
-        freq[(v[i]/exp)%10]++;
+    for (int i = 0; i < v.size(); i++) {
+        freq[(v[i] / exp) % 10]++;
     }
 
-    for(int i=1;i<v.size();i++) {
-        freq[i] += freq[i-1];
+    for (int i = 1; i < v.size(); i++) {
+        freq[i] += freq[i - 1];
     }
 
-    for(int i=v.size()-1;i>=0;i--) {
-        output[freq[(v[i]/exp)%10]] = v[i];
-        freq[(v[i]/exp)%10]--;
+    for (int i = v.size() - 1; i >= 0; i--) {
+        output[freq[(v[i] / exp) % 10]] = v[i];
+        freq[(v[i] / exp) % 10]--;
     }
 
-    for(int i=0;i<v.size();i++) {
+    for (int i = 0; i < v.size(); i++) {
         v[i] = move(output[i]);
     }
 }

@@ -9,7 +9,7 @@
 #include "intstring.h"
 using namespace std;
 
-static int size = 20;
+static int size = 17;
 
 
 bool inputValid(int input) {
@@ -123,8 +123,16 @@ int doSort() {
 
             case 5:{
                 MergeSort<T> ms;
-                ms(v);
-                callMeet(&ms, 1, 1000000, "Merge Sort");
+                int top;
+                cout << "Top down (1) or bottum up (2)?";
+                cin >> top;
+                while(top != 1 && top != 2) {
+                    cout << "Wrong input: ";
+                    cin >> top;
+                }
+                top==1?ms(v, true):ms(v, false);
+                string name = "Merge Sort - ";
+                callMeet(&ms, 1, 1000000, name + (top==1?"Top Down":"Bottom up"));
                 break;
             }
 
