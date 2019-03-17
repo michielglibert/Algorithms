@@ -15,6 +15,7 @@ using std::setw;
 #include <algorithm>   // voor sort()-methode uit STL
 #include <cmath>
 #include <vector>
+#include <stdlib.h>
 
 #include "sortvector.h"
 #include "chrono.h"
@@ -165,7 +166,7 @@ public:
 template<class T>
 void SelectionSort<T>::operator()(Sortvector<T> &v) const {
     for (int i = v.size() - 1; i > 0; i--) {
-        int grootste = 0;
+        int grootste = i;
         for (int j = 0; j < i; j++) {
             if (v[grootste] < v[j]) {
                 grootste = j;
@@ -312,37 +313,42 @@ void QuickSort<T>::operator()(Sortvector<T> &v) const {
 
 template<class T>
 void QuickSort<T>::quickSort(Sortvector<T> &v, int l, int r) const {
-    while (l < r - 1) {
-        T pivot = v[l + (r - l) / 2];
+    if (l < r - 1) {
+        T pivot = v[l+rand()%(r-l)];
         int i = l, j = r - 1;
         while (v[j] > pivot) {
             j--;
         }
+        //Moet enkel indien niet het meeste linkse element werd gekozen
         while (v[i] < pivot) {
             i++;
         }
         while (i < j) {
             swap(v[i], v[j]);
-
-            while (v[i] <= pivot) {
+            i++; //Indien gelijk, toch nog verder gaan
+            while (v[i] < pivot) {
                 i++;
             }
-
+            j--; //Indien gelijk, toch nog verder gaan
             while (v[j] > pivot) {
                 j--;
             }
         }
 
+        cout << "i " << i << " j " << j << endl;
+        quickSort(v, l, j + 1);
+        quickSort(v, j + 1, r);
+
         //cout << "l " << l << " -- r " << r << endl;
         //cout << "i " << i << " -- j " << j << endl;
         //enkel kleinste recursen zodat stack O(lgn) wordt ipv O(n)
-        if (j - l < r - j) {
+        /*if (j - l < r - j) {
             quickSort(v, l, j + 1);
             l = i;
         } else {
             quickSort(v, j + 1, r);
             r = j;
-        }
+        }*/
     }
 }
 
@@ -372,7 +378,6 @@ void DualPivotQuickSort<T>::dualPivotQuickSort(Sortvector<T> &v, int l, int r) c
         int k = l + 1, m = l + 1, g = r - 1;
 
         while (m <= g) {
-            //cout << "m" << m << " g" << g << endl;
             if (v[m] < v[l]) {
                 swap(v[m], v[k]);
                 k++;
@@ -388,8 +393,7 @@ void DualPivotQuickSort<T>::dualPivotQuickSort(Sortvector<T> &v, int l, int r) c
             }
             m++;
         }
-        //cout << "m" << m << " g" << g << endl;
-        //cout << "l" << l << " r" << r << endl;
+
         k--;
         g++;
 

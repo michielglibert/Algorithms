@@ -36,8 +36,6 @@ int zoek(Sortvector<T> &v, T &getal, bool binair) {
             m = l+(((r-l)/(v[r-1]-v[l]))*(getal-v[l]));
         }
 
-        cout << m << endl;
-
         if(getal < v[m]) {
             r = m;
         } else {
@@ -140,7 +138,7 @@ int doSort() {
                 QuickSort<T> qs;
                 qs(v);
                 //doesn't run well with  clion
-                callMeet(&qs, 1, 10000, "Quick Sort");
+                callMeet(&qs, 1, 1000, "Quick Sort");
                 break;
             }
 
@@ -197,7 +195,7 @@ int doSort() {
                 //Not implemented
                 MSDRadixSort<T> msd;
                 msd(v);
-                callMeet(&msd, 1, 10000000 , "MSD Radix Sort");
+                callMeet(&msd, 1, 1000000 , "MSD Radix Sort");
                 break;
             }
 
@@ -213,7 +211,7 @@ int doSort() {
                 //Not implemented
                 LSDRadixSort<T> lsd;
                 lsd(v);
-                callMeet(&lsd, 1, 10000000 , "LSD Radix Sort");
+                callMeet(&lsd, 1, 1000000 , "LSD Radix Sort");
                 break;
             }
 
