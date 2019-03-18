@@ -477,21 +477,26 @@ void MSDRadixSort<T>::operator()(Sortvector<T> &v) const {
 
 template<class T>
 void MSDRadixSort<T>::radixCountSort(Sortvector<T> &v, int exp) const {
+    //1 frequentietabel en hulpvector aanmaken
     vector<int> freq(v.size(), 0), output(v.size(), 0);
 
+    //2 frequentietabel opvullen
     for (int i = 0; i < v.size(); i++) {
         freq[v[i] / exp]++;
     }
 
+    //3 frequentietabel cumulatief maken
     for (int i = 1; i < v.size(); i++) {
         freq[i] += freq[i - 1];
     }
 
+    //4 hulptabel opvullen
     for (int i = v.size() - 1; i >= 0; i--) {
         output[freq[v[i] / exp]] = v[i];
         freq[v[i] / exp]--;
     }
 
+    //5 hulptabel verplaatsen naar gewone tabel
     for (int i = 0; i < v.size(); i++) {
         v[i] = move(output[i]);
     }
