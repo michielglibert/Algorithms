@@ -75,6 +75,7 @@ int doSort() {
         clrScrn();
 
         Sortvector<int> v(size);
+        vector<float> floatv = {0.897, 0.565, 0.656, 0.1234, 0.665, 0.3434, 0.3435, 0.3434, 0.987,0.0445};
 
         if(input < 8) {
             v.vul_random_zonder_dubbels();
@@ -84,9 +85,12 @@ int doSort() {
             v.vul_range();
         }
 
-        if(size <= 20) {
+        if(size <= 20 && input!=15) {
             cout << "-----Orginal array-----" << endl;
             cout << v << endl;
+        } else if(input == 15) {
+            cout << "-----Orginal array-----" << endl;
+            cout << "0.897 0.565 0.656 0.1234 0.665 0.3434 0.3435 0.3434 0.987 0.0445" << endl;
         }
 
         switch(input) {
@@ -115,7 +119,7 @@ int doSort() {
                 HeapSort<T> hs;
                 cout << "Hoogte: " << v.getHoogte() << endl;
                 hs(v);
-                callMeet(&hs, 1, 1000000, "Heap Sort");
+                callMeet(&hs, 1, 1000, "Heap Sort");
                 break;
             }
 
@@ -145,7 +149,7 @@ int doSort() {
             case 7:{
                 DualPivotQuickSort<T> dpqs;
                 dpqs(v);
-                callMeet(&dpqs, 1, 10000, "Dual Pivot QuickSort");
+                //callMeet(&dpqs, 1, 10000, "Dual Pivot QuickSort");
                 break;
             }
 
@@ -216,10 +220,10 @@ int doSort() {
             }
 
             case 15:{
-                //Not implemented
+                //Deze implementatie is enkel nuttig met floats
                 BucketSort<T> bs;
-                bs(v);
-                callMeet(&bs, 1, 1000000, "Bucket Sort");
+                bs(floatv);
+                //callMeet(&bs, 1, 1000000, "Bucket Sort");
                 break;
             }
 
@@ -228,10 +232,16 @@ int doSort() {
                 break;
         }
 
-        if(size <= 20 &&input!=8&&input!=9) {
+        if(size <= 20 &&input!=8&&input!=9&&input!=15) {
             cout << endl << "-----Sorted array-----" << endl;
             cout << v << endl;
+        } else if(input == 15) {
+            cout << "-----Sorted array-----" << endl;
+            for (int i=0; i<floatv.size(); i++)
+                cout << floatv[i] << " ";
+            cout << endl << endl;
         }
+
     } else if(input != -1) {
         cout << endl << "Wrong input" << endl;
     }

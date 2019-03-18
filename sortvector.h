@@ -195,13 +195,6 @@ int Sortvector<T>::geefaantalinversies_beter() const {
 }
 
 template<class T>
-void Sortvector<T>::heapify() {
-    //Heapify via samenvoegen O(n)
-    for (int i = floor(this->size() / 2); i >= 0; i--)
-        heapify_rec(i, this->size());
-}
-
-template<class T>
 void Sortvector<T>::heapify_rec(int i, int eindIndex) {
     int indexLinkse = linkseKind(i);
     int indexRechtse = rechtseKind(i);
@@ -236,6 +229,13 @@ int Sortvector<T>::getHoogte() {
 }
 
 template<class T>
+void Sortvector<T>::heapify() {
+    //Heapify via samenvoegen O(n)
+    for (int i = floor(this->size() / 2); i >= 0; i--)
+        heapify_rec(i, this->size());
+}
+
+template<class T>
 int Sortvector<T>::linkseKind(int i) {
     return 2 * i + 1;
 }
@@ -251,3 +251,4 @@ int Sortvector<T>::getOuder(int i) {
 }
 
 #endif
+

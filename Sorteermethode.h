@@ -139,12 +139,12 @@ public:
 
 template<class T>
 void ShellSort<T>::operator()(Sortvector<T> &v) const {
-    int k = 2;
+    int k = 4;
     while (k >= 1) {
         for (int i = k; i < v.size(); i++) {
+            T temp = move(v[i]);
             int j = i - k;
-            T temp = v[i];
-            while (j >= 0 && temp < v[j]) {
+            while (j >= 0 && v[j] > temp) {
                 v[j + k] = move(v[j]);
                 j -= k;
             }
@@ -152,6 +152,7 @@ void ShellSort<T>::operator()(Sortvector<T> &v) const {
         }
         k--;
     }
+
 }
 
 /** \class SelectionSort
@@ -166,15 +167,14 @@ public:
 template<class T>
 void SelectionSort<T>::operator()(Sortvector<T> &v) const {
     for (int i = v.size() - 1; i > 0; i--) {
-        int grootste = i;
+        T max = i;
         for (int j = 0; j < i; j++) {
-            if (v[grootste] < v[j]) {
-                grootste = j;
+            if (v[j] > v[max]) {
+                max = j;
             }
         }
-        swap(v[i], v[grootste]);
+        swap(v[max], v[i]);
     }
-
 }
 
 
@@ -295,6 +295,7 @@ void MergeSort<T>::merge(Sortvector<T> &v, int l, int m, int r, vector<T> &h) co
     }
 }
 
+
 /** \class QuickSort
 */
 
@@ -311,44 +312,31 @@ void QuickSort<T>::operator()(Sortvector<T> &v) const {
     quickSort(v, 0, v.size());
 }
 
+
 template<class T>
 void QuickSort<T>::quickSort(Sortvector<T> &v, int l, int r) const {
-    if (l < r - 1) {
-        T pivot = v[l+rand()%(r-l)];
-        int i = l, j = r - 1;
-        while (v[j] > pivot) {
+    if(l < r-1) {
+        T pivot = v[l];
+        int i = l, j = r-1;
+
+        while(v[j] > pivot) {
             j--;
         }
-        //Moet enkel indien niet het meeste linkse element werd gekozen
-        while (v[i] < pivot) {
-            i++;
-        }
-        while (i < j) {
+
+        while(i < j) {
             swap(v[i], v[j]);
-            i++; //Indien gelijk, toch nog verder gaan
-            while (v[i] < pivot) {
+            i++;
+            while(v[i] < pivot) {
                 i++;
             }
-            j--; //Indien gelijk, toch nog verder gaan
-            while (v[j] > pivot) {
+            j--;
+            while(v[j] > pivot) {
                 j--;
             }
         }
 
-        cout << "i " << i << " j " << j << endl;
-        quickSort(v, l, j + 1);
-        quickSort(v, j + 1, r);
-
-        //cout << "l " << l << " -- r " << r << endl;
-        //cout << "i " << i << " -- j " << j << endl;
-        //enkel kleinste recursen zodat stack O(lgn) wordt ipv O(n)
-        /*if (j - l < r - j) {
-            quickSort(v, l, j + 1);
-            l = i;
-        } else {
-            quickSort(v, j + 1, r);
-            r = j;
-        }*/
+        quickSort(v, l, j+1);
+        quickSort(v, j+1, r);
     }
 }
 
@@ -365,7 +353,7 @@ public:
 
 template<class T>
 void DualPivotQuickSort<T>::operator()(Sortvector<T> &v) const {
-    dualPivotQuickSort(v, 0, v.size() - 1);
+    dualPivotQuickSort(v, 0, v.size()-1);
 }
 
 template<class T>
@@ -579,11 +567,52 @@ template<typename T>
 class BucketSort : public Sorteermethode<T> {
 public:
     void operator()(Sortvector<T> &v) const;
+    void operator()(vector<float> &v) const;
+    void sort(vector<float> &v) const;
 };
 
 template<class T>
 void BucketSort<T>::operator()(Sortvector<T> &v) const {
+    //Not used
+}
 
+template<class T>
+void BucketSort<T>::operator()(vector<float> &v) const {
+    //1 bucket aanmaken
+    vector<vector<float>> buckets(10);
+
+    //2 items in buckets stoppen
+    for(int i = 0;i < v.size(); i++) {
+        int nummer = v[i]*10;
+        buckets[nummer].push_back(v[i]);
+    }
+
+    //3 buckets individueel sorteren
+    for(int i = 0;i<buckets.size();i++) {
+        sort(buckets[i]);
+    }
+
+
+    //4 buckets aan mekaar zetten
+    int index=0;
+    for(int i = 0;i<buckets.size();i++) {
+        for(int j = 0; j<buckets[i].size();j++) {
+            v[index++] = buckets[i][j];
+        }
+    }
+}
+template<class T>
+void BucketSort<T>::sort(vector<float> &v) const {
+    //Insertion sort
+    for (int i = 1; i < v.size(); i++) {
+        int j = i - 1;
+        float temp = move(v[i]);
+        while (j >= 0 && v[j] > temp) {
+            v[j + 1] = move(v[j]);
+            j--;
+        }
+        v[j + 1] = move(temp);
+    }
 }
 
 #endif
