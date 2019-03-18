@@ -15,4 +15,4 @@ Made in CLion, has a bunch of algorithms (located in Sorteermethode.h):
 * MSD Radix Sort
 * Ternaire Radix Sort (Unavailable)
 * LSD Radix Sort
-* Bucket Sort (Unavailable)
+* Bucket Sort
